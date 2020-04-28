@@ -1,4 +1,5 @@
 from typing import Dict, Callable, Tuple, Optional
+import inspect
 
 from webob import Request, Response
 from parse import parse
@@ -19,6 +20,8 @@ class Api:
         response = Response()
         handler, parsed_params = self.find_handler(request)
         if handler:
+            if inspect.isclass(handler):
+                handler = self.find_class_method(request, handler)
             return handler(request, response, **parsed_params)
         return self.not_found(response)
 
@@ -29,6 +32,14 @@ class Api:
             if parsed_params:
                 return handler, parsed_params.named
         return None, None
+
+    def find_class_method(self, request: Request, handler: object) -> Callable:
+        """Find handler for class-based view depending on request method"""
+        http_verb = request.method.lower()
+        method = getattr(handler(), http_verb, None)
+        if method is None:
+            raise AttributeError('Method not allowed', request.method)
+        return method
 
     def route(self, path: str) -> Callable:
         """Decorator for check route duplicates and add to routes dict"""
