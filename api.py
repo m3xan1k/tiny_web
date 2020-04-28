@@ -13,12 +13,18 @@ class Api:
         return response(environ, start_response)
 
     def handle_request(self, request: Request) -> Response:
-        pass
+        response = Response()
         handler = self.routes.get(request.path)
-        response = handler(request, Response())
-        return response
+        if handler:
+            return handler(request, response)
+        return self.not_found(response)
 
     def route(self, path: str):
         def wrapper(handler):
             self.routes[path] = handler
         return wrapper
+
+    def not_found(self, response):
+        response.status_code = 404
+        response.text = '<h1>Page not found</h1>'
+        return response
