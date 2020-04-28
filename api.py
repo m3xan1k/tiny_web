@@ -3,6 +3,8 @@ import inspect
 
 from webob import Request, Response
 from parse import parse
+from requests import Session
+from wsgiadapter import WSGIAdapter
 
 
 class Api:
@@ -54,3 +56,8 @@ class Api:
         response.status_code = 404
         response.text = '<h1>Page not found</h1>'
         return response
+
+    def test_session(self, base_url='http://testserver'):
+        session = Session()
+        session.mount(prefix=base_url, adapter=WSGIAdapter(self))
+        return session
