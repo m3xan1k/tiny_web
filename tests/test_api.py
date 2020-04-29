@@ -2,6 +2,7 @@ import pytest
 
 from tests.conftest import api, client
 from api import Api
+from middleware import Middleware
 
 
 TEST_URL = 'http://testserver'
@@ -143,13 +144,13 @@ def test_exception_handler(api, client):
     assert response.text == 'Attribute error'
 
 
-def test_404_static_file(client):
-    assert client.get(TEST_URL + '/style.css').status_code == 404
-
-
 FILE_DIR = 'css'
 FILE_NAME = 'main.css'
 FILE_CONTENTS = 'body {background-color: red}'
+
+
+def test_404_static_file(client):
+    assert client.get(TEST_URL + '/static/main.css').status_code == 404
 
 
 def _create_static(static_dir):
@@ -164,7 +165,36 @@ def test_static_is_served(tmpdir_factory):
     api = Api(static_dir=str(static_dir))
     client = api.test_session()
 
-    response = client.get(TEST_URL + f'/{FILE_DIR}/{FILE_NAME}')
+    response = client.get(TEST_URL + f'/static/{FILE_DIR}/{FILE_NAME}')
 
     assert response.status_code == 200
     assert response.text == FILE_CONTENTS
+
+
+def test_middleware_methods_are_called(api, client):
+    process_request_called = False
+    process_response_called = False
+
+    class CallMiddlewareMethods(Middleware):
+        def __init__(self, app):
+            super().__init__(app)
+
+        def process_request(self, request):
+            nonlocal process_request_called
+            process_request_called = True
+
+        def process_response(self, response):
+            nonlocal process_response_called
+            process_response_called = True
+
+    api.add_middleware(CallMiddlewareMethods)
+
+    @api.route('/')
+    def home(request, response):
+        response.text = 'hello'
+        return response
+
+    client.get(TEST_URL + '/')
+
+    assert process_request_called is True
+    assert process_response_called is True

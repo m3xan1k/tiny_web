@@ -8,6 +8,7 @@ from parse import parse
 from requests import Session
 from wsgiadapter import WSGIAdapter
 from whitenoise import WhiteNoise
+from middleware import Middleware
 
 
 class Api:
@@ -18,10 +19,18 @@ class Api:
         )
         self.exception_handler = None
         self.whitenoise = WhiteNoise(self.wsgi_app, root=static_dir)
+        self.middleware = Middleware(self)
 
     def __call__(self, environ: Dict, start_response: Callable) -> Response:
         """Interface to interact with WSGI"""
-        return self.whitenoise(environ, start_response)
+        path: str = environ['PATH_INFO']
+
+        '''Check if static files request then call whitenoise'''
+        if path.startswith('/static'):
+            environ['PATH_INFO'] = path[len('/static'):]
+            return self.whitenoise(environ, start_response)
+
+        return self.middleware(environ, start_response)
 
     def wsgi_app(self, environ: Dict, start_response: Callable) -> Response:
         """Incapsulated entrypoint to app"""
@@ -92,3 +101,6 @@ class Api:
 
     def add_custom_exception_handler(self, exception_handler: Callable) -> None:
         self.exception_handler = exception_handler
+
+    def add_middleware(self, middleware: Middleware) -> None:
+        self.middleware.add(middleware)
