@@ -1,5 +1,7 @@
 from typing import Dict, Callable, Tuple, Optional
 import inspect
+import os
+from jinja2 import Environment, FileSystemLoader
 
 from webob import Request, Response
 from parse import parse
@@ -8,8 +10,11 @@ from wsgiadapter import WSGIAdapter
 
 
 class Api:
-    def __init__(self):
+    def __init__(self, templates_dir: str = 'templates'):
         self.routes = {}
+        self.templates = Environment(
+            loader=FileSystemLoader(os.path.abspath(templates_dir))
+        )
 
     def __call__(self, environ: Dict, start_response: Callable) -> Response:
         """Interface to interact with WSGI"""
@@ -66,3 +71,9 @@ class Api:
         session = Session()
         session.mount(prefix=base_url, adapter=WSGIAdapter(self))
         return session
+
+    def template(self, template: str, context: Optional[Dict] = None) -> bytes:
+        if context is None:
+            context = {}
+        html_bytes = self.templates.get_template(template).render(**context).encode()
+        return html_bytes

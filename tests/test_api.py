@@ -103,3 +103,24 @@ def test_alternative_add_route(api, client):
     api.add_route('/home', home)
 
     assert client.get(TEST_URL + '/home').status_code == 200
+
+
+def test_templates(api, client):
+
+    title = 'Microframework'
+    name = 'tiny-web'
+
+    @api.route('/')
+    def home(request, response):
+        context = {
+            'title': title,
+            'name': name,
+        }
+        response.body = api.template('index.html', context)
+        return response
+
+    response = client.get(TEST_URL + '/')
+
+    assert 'text/html' in response.headers['Content-Type']
+    assert title in response.text
+    assert name in response.text
