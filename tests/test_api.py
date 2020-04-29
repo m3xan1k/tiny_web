@@ -93,3 +93,13 @@ def test_class_based_view_post(api, client):
 
     with pytest.raises(AttributeError):
         client.patch(TEST_URL + '/posts?id=1')
+
+
+def test_alternative_add_route(api, client):
+    def home(request, response):
+        response.text = 'alternative'
+        return response
+
+    api.add_route('/home', home)
+
+    assert client.get(TEST_URL + '/home').status_code == 200

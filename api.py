@@ -45,11 +45,15 @@ class Api:
 
     def route(self, path: str) -> Callable:
         """Decorator for check route duplicates and add to routes dict"""
-        assert self.routes.get(path) is None, f'{path} route already exists'
-
         def wrapper(handler):
-            self.routes[path] = handler
+            self.add_route(path, handler)
         return wrapper
+
+    def add_route(self, path: str, handler: Callable) -> None:
+        """Another style for route register"""
+        assert self.routes.get(path) is None, f'{path} route already exists'
+        self.routes[path] = handler
+        return None
 
     def not_found(self, response: Response) -> Response:
         """Handler for not existed request paths"""
@@ -58,6 +62,7 @@ class Api:
         return response
 
     def test_session(self, base_url='http://testserver'):
+        """Test environment"""
         session = Session()
         session.mount(prefix=base_url, adapter=WSGIAdapter(self))
         return session
