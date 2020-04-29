@@ -1,6 +1,7 @@
 import pytest
 
 from tests.conftest import api, client
+from api import Api
 
 
 TEST_URL = 'http://testserver'
@@ -124,3 +125,46 @@ def test_templates(api, client):
     assert 'text/html' in response.headers['Content-Type']
     assert title in response.text
     assert name in response.text
+
+
+def test_exception_handler(api, client):
+    def on_exception(request, response, exception_class):
+        response.text = 'Attribute error'
+        return response
+
+    api.add_custom_exception_handler(on_exception)
+
+    @api.route('/')
+    def home(request, response):
+        raise AttributeError()
+
+    response = client.get(TEST_URL + '/')
+
+    assert response.text == 'Attribute error'
+
+
+def test_404_static_file(client):
+    assert client.get(TEST_URL + '/style.css').status_code == 404
+
+
+FILE_DIR = 'css'
+FILE_NAME = 'main.css'
+FILE_CONTENTS = 'body {background-color: red}'
+
+
+def _create_static(static_dir):
+    asset = static_dir.mkdir(FILE_DIR).join(FILE_NAME)
+    asset.write(FILE_CONTENTS)
+    return asset
+
+
+def test_static_is_served(tmpdir_factory):
+    static_dir = tmpdir_factory.mktemp('static')
+    _create_static(static_dir)
+    api = Api(static_dir=str(static_dir))
+    client = api.test_session()
+
+    response = client.get(TEST_URL + f'/{FILE_DIR}/{FILE_NAME}')
+
+    assert response.status_code == 200
+    assert response.text == FILE_CONTENTS

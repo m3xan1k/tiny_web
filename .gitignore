@@ -10,3 +10,4 @@ app.py
 .coveragerc
 app/
 templates/
+static/

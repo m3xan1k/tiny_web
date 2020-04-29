@@ -7,17 +7,24 @@ from webob import Request, Response
 from parse import parse
 from requests import Session
 from wsgiadapter import WSGIAdapter
+from whitenoise import WhiteNoise
 
 
 class Api:
-    def __init__(self, templates_dir: str = 'templates'):
+    def __init__(self, templates_dir: str = 'templates', static_dir: str = 'static'):
         self.routes = {}
         self.templates = Environment(
             loader=FileSystemLoader(os.path.abspath(templates_dir))
         )
+        self.exception_handler = None
+        self.whitenoise = WhiteNoise(self.wsgi_app, root=static_dir)
 
     def __call__(self, environ: Dict, start_response: Callable) -> Response:
         """Interface to interact with WSGI"""
+        return self.whitenoise(environ, start_response)
+
+    def wsgi_app(self, environ: Dict, start_response: Callable) -> Response:
+        """Incapsulated entrypoint to app"""
         request = Request(environ)
         response = self.handle_request(request)
         return response(environ, start_response)
@@ -26,11 +33,16 @@ class Api:
         """Sends request to handler and returns generated response"""
         response = Response()
         handler, parsed_params = self.find_handler(request)
-        if handler:
-            if inspect.isclass(handler):
-                handler = self.find_class_method(request, handler)
-            return handler(request, response, **parsed_params)
-        return self.not_found(response)
+        try:
+            if handler:
+                if inspect.isclass(handler):
+                    handler = self.find_class_method(request, handler)
+                return handler(request, response, **parsed_params)
+            return self.not_found(response)
+        except Exception as e:
+            if self.exception_handler is None:
+                raise e
+            return self.exception_handler(request, response, e)
 
     def find_handler(self, request: Request) -> Optional[Tuple[Callable, Dict]]:
         """Check if requested path in routes dict and return callback"""
@@ -77,3 +89,6 @@ class Api:
             context = {}
         html_bytes = self.templates.get_template(template).render(**context).encode()
         return html_bytes
+
+    def add_custom_exception_handler(self, exception_handler: Callable) -> None:
+        self.exception_handler = exception_handler
