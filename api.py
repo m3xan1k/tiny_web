@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Tuple, Optional
+from typing import Dict, Callable, Tuple, Optional, List
 import inspect
 import os
 from jinja2 import Environment, FileSystemLoader
@@ -41,12 +41,17 @@ class Api:
     def handle_request(self, request: Request) -> Response:
         """Sends request to handler and returns generated response"""
         response = Response()
-        handler, parsed_params = self.find_handler(request)
+        handler_data, kwargs = self.find_handler(request)
         try:
-            if handler:
+            if handler_data:
+                handler = handler_data['handler']
+                allowed_methods = handler_data['allowed_methods']
                 if inspect.isclass(handler):
                     handler = self.find_class_method(request, handler)
-                return handler(request, response, **parsed_params)
+                else:
+                    if not request.method.lower() in set(allowed_methods):
+                        raise AttributeError('Method not allowed', request.method.lower())
+                return handler(request, response, **kwargs)
             return self.not_found(response)
         except Exception as e:
             if self.exception_handler is None:
@@ -69,16 +74,19 @@ class Api:
             raise AttributeError('Method not allowed', request.method)
         return method
 
-    def route(self, path: str) -> Callable:
+    def route(self, path: str, allowed_methods: Optional[List] = None) -> Callable:
         """Decorator for check route duplicates and add to routes dict"""
         def wrapper(handler):
-            self.add_route(path, handler)
+            self.add_route(path, handler, allowed_methods)
         return wrapper
 
-    def add_route(self, path: str, handler: Callable) -> None:
+    def add_route(self, path: str, handler: Callable,
+                  allowed_methods: Optional[List] = None) -> None:
         """Another style for route register"""
         assert self.routes.get(path) is None, f'{path} route already exists'
-        self.routes[path] = handler
+        if allowed_methods is None:
+            allowed_methods = ['get', 'post', 'put', 'delete', 'patch', 'options']
+        self.routes[path] = {'handler': handler, 'allowed_methods': allowed_methods}
         return None
 
     def not_found(self, response: Response) -> Response:

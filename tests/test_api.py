@@ -198,3 +198,17 @@ def test_middleware_methods_are_called(api, client):
 
     assert process_request_called is True
     assert process_response_called is True
+
+
+def test_allowed_method_for_func_based_views(api, client):
+
+    @api.route('/', allowed_methods=['get', 'post'])
+    def home(request, response):
+        response.text = 'hello'
+        return response
+
+    assert client.get(TEST_URL + '/').status_code == 200
+    assert client.post(TEST_URL + '/').status_code == 200
+
+    with pytest.raises(AttributeError):
+        client.delete(TEST_URL + '/')
