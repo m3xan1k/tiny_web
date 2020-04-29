@@ -7,3 +7,4 @@ trash/
 app.py
 .pytest_cache/
 .coverage
+.coveragerc
