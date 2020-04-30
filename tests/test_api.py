@@ -212,3 +212,39 @@ def test_allowed_method_for_func_based_views(api, client):
 
     with pytest.raises(AttributeError):
         client.delete(TEST_URL + '/')
+
+
+def test_json_response(api, client):
+    @api.route('/json')
+    def json_handler(request, response):
+        response.json = {'message': 'hello'}
+        return response
+
+    response = client.get(TEST_URL + '/json')
+
+    assert response.headers['Content-Type'] == 'application/json'
+    assert response.json()['message'] == 'hello'
+
+
+def test_html_response(api, client):
+    @api.route('/html')
+    def html_handler(request, response):
+        response.html = '<h1>Hello</h1>'
+        return response
+
+    response = client.get(TEST_URL + '/html')
+
+    assert response.headers['Content-Type'] == 'text/html; charset=UTF-8'
+    assert response.text == '<h1>Hello</h1>'
+
+
+def test_plain_response(api, client):
+    @api.route('/text')
+    def text_handler(request, response):
+        response.text = 'hello'
+        return response
+
+    response = client.get(TEST_URL + '/text')
+
+    assert response.headers['Content-Type'] == 'text/plain; charset=UTF-8'
+    assert response.text == 'hello'

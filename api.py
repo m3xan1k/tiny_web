@@ -3,7 +3,8 @@ import inspect
 import os
 from jinja2 import Environment, FileSystemLoader
 
-from webob import Request, Response
+from webob import Request
+from response import Response
 from parse import parse
 from requests import Session
 from wsgiadapter import WSGIAdapter
@@ -104,8 +105,8 @@ class Api:
     def template(self, template: str, context: Optional[Dict] = None) -> bytes:
         if context is None:
             context = {}
-        html_bytes = self.templates.get_template(template).render(**context).encode()
-        return html_bytes
+        html = self.templates.get_template(template).render(**context)
+        return html
 
     def add_custom_exception_handler(self, exception_handler: Callable) -> None:
         self.exception_handler = exception_handler
