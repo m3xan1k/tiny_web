@@ -161,6 +161,8 @@ Then you can use the files inside this folder in HTML files:
 </html>
 ```
 
+Also you may want use custom 404 page, just make '404.html' in the root of templates folder.
+
 ### Middleware
 
 You can create custom middleware classes by inheriting from the `bumbo.middleware.Middleware` class and overriding its two methods

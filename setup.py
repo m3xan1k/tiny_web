@@ -14,7 +14,7 @@ URL = 'https://github.com/m3xan1k/tiny_web'
 EMAIL = 'dev.serzh@gmail.com'
 AUTHOR = 'Sergey Shevtsov'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 
 REQUIRED = [
     'jinja2==2.11.2',
