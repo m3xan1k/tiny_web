@@ -14,7 +14,7 @@ URL = 'https://github.com/m3xan1k/tiny_web'
 EMAIL = 'dev.serzh@gmail.com'
 AUTHOR = 'Sergey Shevtsov'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 
 REQUIRED = [
     'jinja2==2.11.2',
@@ -22,6 +22,8 @@ REQUIRED = [
     'parse==1.15.0',
     'webob==1.8.6',
     'whitenoise==5.0.1',
+    'requests==2.23.0',
+    'requests-wsgi-adapter==0.4.1',
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))

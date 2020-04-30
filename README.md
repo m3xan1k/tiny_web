@@ -90,11 +90,6 @@ def users(request, response):
 
 ### Unit Tests
 
-To use test client install packages:
-```
-pip install requests requests-wsgi-adapter
-```
-
 The recommended way of writing unit tests is with [pytest](https://docs.pytest.org/en/latest/). There are two built in fixtures
 that you may want to use when writing unit tests with Bumbo. The first one is `app` which is an instance of the main `API` class:
 
