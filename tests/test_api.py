@@ -1,8 +1,8 @@
 import pytest
 
 from tests.conftest import api, client
-from api import Api
-from middleware import Middleware
+from tiny_web.api import Api
+from tiny_web.middleware import Middleware
 
 
 TEST_URL = 'http://testserver'

@@ -1,6 +1,6 @@
 import pytest
 
-from api import Api
+from tiny_web.api import Api
 
 
 @pytest.fixture

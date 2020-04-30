@@ -4,12 +4,13 @@ import os
 from jinja2 import Environment, FileSystemLoader
 
 from webob import Request
-from response import Response
 from parse import parse
 from requests import Session
 from wsgiadapter import WSGIAdapter
 from whitenoise import WhiteNoise
-from middleware import Middleware
+
+from tiny_web.middleware import Middleware
+from tiny_web.response import Response
 
 
 class Api:
