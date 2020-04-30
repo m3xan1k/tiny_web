@@ -1,8 +1,9 @@
 from typing import Dict, Callable, Tuple, Optional, List
 import inspect
 import os
-from jinja2 import Environment, FileSystemLoader
 
+from jinja2 import Environment, FileSystemLoader
+from jinja2.exceptions import TemplateNotFound
 from webob import Request
 from parse import parse
 from requests import Session
@@ -94,7 +95,10 @@ class Api:
     def not_found(self, response: Response) -> Response:
         """Handler for not existed request paths"""
         response.status_code = 404
-        response.text = '<h1>Page not found</h1>'
+        try:
+            response.html = self.template(template='404.html')
+        except TemplateNotFound:
+            response.html = '<h1>Page not found</h1>'
         return response
 
     def test_session(self, base_url='http://testserver'):
