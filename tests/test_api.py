@@ -130,7 +130,6 @@ def test_templates(tmpdir_factory):
         return response
 
     response = client.get(TEST_URL + '/')
-    print(response.text)
 
     assert 'text/html' in response.headers['Content-Type']
     assert title in response.text
