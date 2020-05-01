@@ -122,10 +122,10 @@ def test_parameterized_route(app, client):
 
 ## Templates
 
-The default folder for templates is `templates`. You can change it when initializing the main `API()` class:
+The default folder for templates is `templates`. You can change it when initializing the main `Api()` class:
 
 ```python
-app = API(templates_dir="templates_dir_name")
+app = Api(templates_dir="templates_dir_name")
 ```
 
 Then you can use HTML files in that folder like so in a handler:
@@ -142,7 +142,7 @@ def handler_with_template(req, resp):
 Just like templates, the default folder for static files is `static` and you can override it:
 
 ```python
-app = API(static_dir="static_dir_name")
+app = Api(static_dir="static_dir_name")
 ```
 
 Then you can use the files inside this folder in HTML files:
@@ -169,15 +169,15 @@ Also you may want use custom 404 page, just make '404.html' in the root of templ
 
 ### Middleware
 
-You can create custom middleware classes by inheriting from the `bumbo.middleware.Middleware` class and overriding its two methods
+You can create custom middleware classes by inheriting from the `tiny_web.middleware.Middleware` class and overriding its two methods
 that are called before and after each request:
 
 ```python
-from bumbo.api import API
-from bumbo.middleware import Middleware
+from tiny_web.api import Api
+from tiny_web.middleware import Middleware
 
 
-app = API()
+app = Api()
 
 
 class SimpleCustomMiddleware(Middleware):
