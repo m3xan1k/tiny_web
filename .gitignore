@@ -6,8 +6,6 @@ Pipfile.lock
 trash/
 app.py
 .pytest_cache/
-.coverage
-.coveragerc
 app/
 templates/
 static/
