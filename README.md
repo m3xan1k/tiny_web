@@ -4,6 +4,9 @@ Python WSGI micro-framework to build api/site
 ![purpose](https://img.shields.io/badge/purpose-learning-green.svg)
 ![PyPI](https://img.shields.io/pypi/v/tiny_web)
 
+Demo toy-blog: http://tinyblog666.herokuapp.com/
+Source code of toy-blog: https://github.com/m3xan1k/tiny_blog
+
 ## Installation
 
 ```shell
