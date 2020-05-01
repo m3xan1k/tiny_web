@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from tests.conftest import api, client
@@ -107,10 +108,17 @@ def test_alternative_add_route(api, client):
     assert client.get(TEST_URL + '/home').status_code == 200
 
 
-def test_templates(api, client):
+def test_templates(tmpdir_factory):
 
     title = 'Microframework'
     name = 'tiny-web'
+    template_content = f'<title>{title}</title><body>{name}</body>'
+    template_dir = tmpdir_factory.mktemp('./templates')
+    template = template_dir.join('index.html')
+    template.write(template_content)
+    api = Api(templates_dir=template_dir)
+    client = api.test_session()
+
 
     @api.route('/')
     def home(request, response):
@@ -118,10 +126,11 @@ def test_templates(api, client):
             'title': title,
             'name': name,
         }
-        response.body = api.template('index.html', context)
+        response.html = api.template('index.html', context)
         return response
 
     response = client.get(TEST_URL + '/')
+    print(response.text)
 
     assert 'text/html' in response.headers['Content-Type']
     assert title in response.text
