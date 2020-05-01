@@ -4,6 +4,9 @@ Python WSGI micro-framework to build api/site
 ![purpose](https://img.shields.io/badge/purpose-learning-green.svg)
 ![PyPI](https://img.shields.io/pypi/v/tiny_web)
 [![Build Status](https://travis-ci.com/m3xan1k/tiny_web.svg?branch=master)](https://travis-ci.com/m3xan1k/tiny_web)
+[![codecov](https://codecov.io/gh/m3xan1k/tiny_web/branch/master/graph/badge.svg)](https://codecov.io/gh/m3xan1k/tiny_web)
+
+
 
 Demo toy-blog: http://tinyblog666.herokuapp.com/
 
