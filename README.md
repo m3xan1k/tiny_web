@@ -5,6 +5,7 @@ Python WSGI micro-framework to build api/site
 ![PyPI](https://img.shields.io/pypi/v/tiny_web)
 
 Demo toy-blog: http://tinyblog666.herokuapp.com/
+
 Source code of toy-blog: https://github.com/m3xan1k/tiny_blog
 
 ## Installation
@@ -198,4 +199,4 @@ TODO:
 - [x] Middlewares
 - [x] Documentation
 - [x] Build package
-- [ ] Dockerize and deploy demo
+- [x] Dockerize and deploy demo
