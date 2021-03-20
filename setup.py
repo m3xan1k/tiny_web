@@ -17,7 +17,7 @@ REQUIRES_PYTHON = '>=3.6.0'
 VERSION = '0.0.4'
 
 REQUIRED = [
-    'jinja2==2.11.2',
+    'jinja2==2.11.3',
     'markupsafe==1.1.1',
     'parse==1.15.0',
     'webob==1.8.6',
